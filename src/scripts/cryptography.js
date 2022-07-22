@@ -16,7 +16,7 @@ export const decryptEncodedMessage = async (privateKey, encryptedMessage) => {
       encryptedMessage // type ArraryBuffer
     );
     console.log('Email decrypted');
-    const decryptedMessage = decode(decryptedEncodedMessage);
+    const decryptedMessage = await decode(decryptedEncodedMessage);
     console.log('decryptedMessage', decryptedMessage);
 
     return { decryptedMessage, error: false };
