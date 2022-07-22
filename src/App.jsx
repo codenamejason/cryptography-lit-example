@@ -19,18 +19,19 @@ function App() {
 
   let keyPr;
 
+  // Generate the key pair / save to state for demo
   const keyPairCreation = async () => {
     console.log('Generating key pair...');
     await generateKeyPair().then(async (kp) => {
       console.log('KP: ', kp);
       // save to state for now...
-      keyPr = kp;
-      setKeyPair(keyPr);
+      setKeyPair(kp);
     });
     console.log('Key pair generated!');
     console.log(keyPair); // keyPair has no value
   };
 
+  // save the key pair to Lit 🔥
   const saveKeyPair = async () => {
     // Save to Lit
     console.log('Saving to Lit...');
@@ -38,9 +39,11 @@ function App() {
     console.log('Saved to Lit!');
   };
 
+  // Lit Encrypt
   const litProtocolEncrypt = async () => {
     console.log('key pair to save with Lit: ', keyPair); // keyPair has value
-    await Lit.encryptString(JSON.stringify(keyPair)).then((result) => {
+    const kp = JSON.stringify(keyPair);
+    await Lit.encryptString(kp).then((result) => {
       console.log('Encryption of key pair result: ', result);
       setEncryptedFile(result.encryptedFile);
       setEncryptedSymmetricKey(result.encryptedSymmetricKey);
@@ -48,23 +51,24 @@ function App() {
     });
   };
 
+  // Lit Decrypt
   const litProtocolDecrypt = async () => {
     console.log('Decrypting from Lit');
     let decryptedFile = await Lit.decryptString(
       encryptedFile,
       encryptedSymmetricKey
     );
-    // this should be the pvt key to decrypt the key pair
-    // decryptedFile type: string
+    // this should be the decrypted key pair
+    // decryptedFile type: Blob
     console.log('Decrypted key pair: ', JSON.parse(decryptedFile));
-
-    // decryptEmail(new TextEncoder().encode(decryptedFile));
   };
 
-  const decryptEmail = (decryptedEncodedFile) => {
+  // decrypt the email using the private key from key pair
+  // encryptedFile will come from GH
+  const decryptEmail = (encryptedString) => {
     console.log('Decrypting email...');
-    // now decrypt this messsage to get the private key for the email
-    decryptEncodedMessage(keyPair.privateKey, decryptedEncodedFile).then(
+    // now decrypt this messsage to get the email
+    decryptEncodedMessage(keyPair.privateKey, new TextEncoder().encode(encryptedString)).then(
       (result) => {
         console.log('Decrypted Email: ', result);
       }
