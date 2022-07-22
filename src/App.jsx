@@ -5,8 +5,6 @@ import {
   decryptEncodedMessage,
   encrypt,
   generateKeyPair,
-  decode,
-  encode,
 } from './scripts/cryptography';
 import Lit from './scripts/lit';
 
@@ -20,7 +18,6 @@ function App() {
   // const [message, setMessage] = useState();
   const [keyPair, setKeyPair] = useState();
   const [message, setMessage] = useState();
-  const [exportedPubKey, setExportedPubKey] = useState();
   const [encrytpedMessage, setEncrytpedMessage] = useState();
   const [encryptedFile, setEncryptedFile] = useState();
   const [encryptedSymmetricKey, setEncryptedSymmetricKey] = useState();
@@ -34,7 +31,7 @@ function App() {
       setKeyPair(kp);
     });
     console.log('Key pair generated!');
-    console.log(keyPair); // keyPair has no value
+    console.log(keyPair);
   };
 
   // save the key pair to Lit 🔥
@@ -51,7 +48,7 @@ function App() {
       'jwk',
       keyPair.privateKey
     );
-    console.log('key to save with Lit: ', exportedKeyPair); // keyPair has value
+    console.log('key to save with Lit: ', exportedKeyPair);
     await Lit.encryptString(JSON.stringify(exportedKeyPair)).then((result) => {
       console.log('Encryption of key result: ', result);
       setEncryptedFile(result.encryptedFile);
@@ -67,8 +64,7 @@ function App() {
       encryptedFile,
       encryptedSymmetricKey
     );
-    // this should be the decrypted key pair
-    // decryptedFile type: Blob
+    // this should be the decrypted key
     console.log('Decrypted key: ', JSON.parse(decryptedFile));
   };
 
@@ -85,17 +81,12 @@ function App() {
   // encryptedFile will come from GH
   const decryptEmail = async () => {
     console.log('Decrypting email...');
-    // const exportedPvtKey = await crypto.subtle.exportKey(
-    //   'jwk',
-    //   keyPair.privateKey
-    // );
     // now decrypt this messsage to get the email
-    await decryptEncodedMessage(
-      keyPair.privateKey,
-      encrytpedMessage
-    ).then((result) => {
-      console.log('Decrypted Email: ', result);
-    });
+    await decryptEncodedMessage(keyPair.privateKey, encrytpedMessage).then(
+      (result) => {
+        console.log('Decrypted Email: ', result);
+      }
+    );
   };
 
   return (
