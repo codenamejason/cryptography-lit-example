@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import './App.css';
 import logo from './logo.svg';
-import { decryptEncodedMessage, generateKeyPair } from './scripts/cryptography';
+import {
+  decryptEncodedMessage,
+  encrypt,
+  generateKeyPair,
+} from './scripts/cryptography';
 import Lit from './scripts/lit';
 
 // 0. RM generates key pair
@@ -13,11 +17,11 @@ import Lit from './scripts/lit';
 function App() {
   // const [message, setMessage] = useState();
   const [keyPair, setKeyPair] = useState();
+  const [message, setMessage] = useState();
   const [exportedPubKey, setExportedPubKey] = useState();
+  const [encrytpedMessage, setEncrytpedMessage] = useState();
   const [encryptedFile, setEncryptedFile] = useState();
   const [encryptedSymmetricKey, setEncryptedSymmetricKey] = useState();
-
-  let keyPr;
 
   // Generate the key pair / save to state for demo
   const keyPairCreation = async () => {
@@ -41,7 +45,10 @@ function App() {
 
   // Lit Encrypt
   const litProtocolEncrypt = async () => {
-    const exportedKeyPair = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
+    const exportedKeyPair = await crypto.subtle.exportKey(
+      'jwk',
+      keyPair.privateKey
+    );
     console.log('key to save with Lit: ', exportedKeyPair); // keyPair has value
     await Lit.encryptString(JSON.stringify(exportedKeyPair)).then((result) => {
       console.log('Encryption of key result: ', result);
@@ -63,31 +70,48 @@ function App() {
     console.log('Decrypted key: ', JSON.parse(decryptedFile));
   };
 
-  // decrypt the email using the private key from key pair
+  // Mocked for GH as a user
+  const encryptEmail = async () => {
+    console.log('Encrypting email');
+    const encodedMessage = new TextEncoder().encode(message);
+    const encryptedMessage = await encrypt(keyPair.publicKey, encodedMessage);
+    console.log('Email has been encrypted', encryptedMessage);
+    setEncrytpedMessage(encodedMessage);
+  };
+
+  // decrypt the email using the private key stored on Lit 🔥
   // encryptedFile will come from GH
-  const decryptEmail = (encryptedString) => {
+  const decryptEmail = () => {
     console.log('Decrypting email...');
     // now decrypt this messsage to get the email
-    decryptEncodedMessage(keyPair.privateKey, new TextEncoder().encode(encryptedString)).then(
-      (result) => {
-        console.log('Decrypted Email: ', result);
-      }
-    );
+    decryptEncodedMessage(
+      keyPair.privateKey,
+      new TextEncoder().encode(encrytpedMessage)
+    ).then((result) => {
+      console.log('Decrypted Email: ', result);
+    });
   };
 
   return (
     <div className="App">
       <header className="App-header">
+        <h2>Lit 🔥 Protocol Demo with PII</h2>
         <img src={logo} className="App-logo" alt="logo" />
         <button onClick={() => keyPairCreation()}>Generate KeyPair</button>
         <br />
         <button onClick={() => saveKeyPair()}>Save to Lit 🔥</button>
         <br />
-        {/* <input type="email" onChange={(e) => setMessage(e.target.value)} />
+        <input
+          value={message}
+          type="text"
+          onChange={(e) => setMessage(e.target.value)}
+        />
         <br />
-        <button onClick={() => litProtocolEncrypt()}>Encrypt</button>
-        <br /> */}
-        <button onClick={() => litProtocolDecrypt()}>Decrypt</button>
+        <button onClick={() => encryptEmail()}>Encrypt PII</button>
+        <br />
+        <button onClick={() => litProtocolDecrypt()}>Decrypt Key</button>
+        <br />
+        <button onClick={() => decryptEmail()}>Decrypt PII</button>
       </header>
     </div>
   );

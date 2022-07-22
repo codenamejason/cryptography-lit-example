@@ -7,6 +7,7 @@ export const algorithm = {
 };
 
 export const decryptEncodedMessage = async (privateKey, encryptedMessage) => {
+  // todo: add try/catch
   console.log('Decrypting email...');
   const decryptedEncodedMessage = await crypto.subtle.decrypt(
     algorithm,
@@ -33,7 +34,7 @@ export const testCryptography = async () => {
   const message = keyPair.privateKey;
   console.log('message:', message);
 
-  const encodedMessage = new TextEncoder().encode(message);
+  const encodedMessage = encode(message);
   const encryptedMessage = await crypto.subtle.encrypt(
     algorithm,
     importedPubKey,
@@ -47,7 +48,7 @@ export const testCryptography = async () => {
     encryptedMessage
   );
 
-  const decryptedMessage = new TextDecoder().decode(decryptedEncodedMessage);
+  const decryptedMessage = decode(decryptedEncodedMessage);
   console.log('decryptedMessage', decryptedMessage);
 
   return {
@@ -57,6 +58,24 @@ export const testCryptography = async () => {
     decryptedMessage,
     message,
   };
+};
+
+export const encrypt = async (importedPubKey, encodedMessage) => {
+  const encryptedMessage = await crypto.subtle.encrypt(
+    algorithm,
+    importedPubKey,
+    encodedMessage
+  );
+
+  return encryptedMessage;
+};
+
+export const decode = async (decryptedEncodedMessage) => {
+  return new TextDecoder().decode(decryptedEncodedMessage);
+};
+
+export const encode = async (message) => {
+  return new TextEncoder().encode(message);
 };
 
 export const generateKeyPair = async () => {
