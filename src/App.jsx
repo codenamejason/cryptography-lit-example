@@ -4,35 +4,60 @@ import logo from './logo.svg';
 import { decryptEncodedMessage, generateKeyPair } from './scripts/cryptography';
 import Lit from './scripts/lit';
 
+// 0. RM generates key pair
+// 1. RM saves key-pair to Lit
+// 2. GH gets the public key and encrypts the email
+// 3. GH encrypts the PII
+// 4. RM uses Lit to get the private key and decrypt PII
+
 function App() {
-  const [message, setMessage] = useState();
+  // const [message, setMessage] = useState();
   const [keyPair, setKeyPair] = useState();
   const [exportedPubKey, setExportedPubKey] = useState();
   const [encryptedFile, setEncryptedFile] = useState();
   const [encryptedSymmetricKey, setEncryptedSymmetricKey] = useState();
 
+  let keyPr;
+
+  const keyPairCreation = async () => {
+    console.log('Generating key pair...');
+    await generateKeyPair().then(async (kp) => {
+      console.log('KP: ', kp);
+      // save to state for now...
+      keyPr = kp;
+      setKeyPair(keyPr);
+    });
+    console.log('Key pair generated!');
+    console.log(keyPair); // keyPair has no value
+    // await litProtocolEncrypt(keyPair); // keyPair is undefined...
+  };
+
+  const saveKeyPair = async () => {
+    // Save to Lit
+    console.log('Saving to Lit...');
+    await litProtocolEncrypt();
+    console.log('Saved to Lit!');
+  };
+
   const litProtocolEncrypt = async () => {
-    console.log('exported public key: ', exportedPubKey);
-    await Lit.encryptString(exportedPubKey.n).then((result) => {
-      console.log('Encryption of private key result: ', result);
+    console.log('key pair to save with Lit: ', keyPair); // keyPair has value
+    await Lit.encryptString(JSON.stringify(keyPair)).then((result) => {
+      console.log('Encryption of key pair result: ', result);
       setEncryptedFile(result.encryptedFile);
       setEncryptedSymmetricKey(result.encryptedSymmetricKey);
+      console.log('Encrypted Message: ', result.encryptedFile);
     });
-
-    console.log('Encrypted Message: ', encryptedFile);
   };
 
   const litProtocolDecrypt = async () => {
-    console.log(message);
+    console.log('Decrypting from Lit');
     let decryptedFile = await Lit.decryptString(
       encryptedFile,
       encryptedSymmetricKey
     );
-    // this should be the pvt key to decrypt the email address
-    // decryptedFile type: String
-    //
-    console.log('Decrypted Private Key: ', decryptedFile);
-    // console.log(new TextEncoder().encode(decryptedFile));
+    // this should be the pvt key to decrypt the key pair
+    // decryptedFile type: File
+    console.log('Decrypted key pair: ', decryptedFile);
 
     // decryptEmail(new TextEncoder().encode(decryptedFile));
   };
@@ -47,25 +72,18 @@ function App() {
     );
   };
 
-  const keyPairCreation = async () => {
-    console.log('Generating key pair...');
-    await generateKeyPair().then((kp) => {
-      console.log('KP: ', kp);
-      setKeyPair(kp);
-    });
-    console.log('Key pair generated!');
-  };
-
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <button onClick={() => keyPairCreation()}>Generate KeyPair</button>
         <br />
-        <input type="email" onChange={(e) => setMessage(e.target.value)} />
+        <button onClick={() => saveKeyPair()}>Save to Lit 🔥</button>
+        <br />
+        {/* <input type="email" onChange={(e) => setMessage(e.target.value)} />
         <br />
         <button onClick={() => litProtocolEncrypt()}>Encrypt</button>
-        <br />
+        <br /> */}
         <button onClick={() => litProtocolDecrypt()}>Decrypt</button>
       </header>
     </div>

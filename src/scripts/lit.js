@@ -25,13 +25,14 @@ class Lit {
     this.litNodeClient = client;
   }
 
-  async encryptString(str) {
+  async encryptString(string) {
     if (!this.litNodeClient) {
       await this.connect();
     }
     const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain });
-    const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(str);
-
+    console.log("Encrypting key pair", string);
+    const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(string);
+    console.log("Encrypted the key pair");
     const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
       accessControlConditions: accessControlConditions,
       symmetricKey,
