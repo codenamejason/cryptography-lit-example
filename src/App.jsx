@@ -5,6 +5,8 @@ import {
   decryptEncodedMessage,
   encrypt,
   generateKeyPair,
+  decode,
+  encode,
 } from './scripts/cryptography';
 import Lit from './scripts/lit';
 
@@ -76,17 +78,21 @@ function App() {
     const encodedMessage = new TextEncoder().encode(message);
     const encryptedMessage = await encrypt(keyPair.publicKey, encodedMessage);
     console.log('Email has been encrypted', encryptedMessage);
-    setEncrytpedMessage(encodedMessage);
+    setEncrytpedMessage(encryptedMessage);
   };
 
   // decrypt the email using the private key stored on Lit 🔥
   // encryptedFile will come from GH
-  const decryptEmail = () => {
+  const decryptEmail = async () => {
     console.log('Decrypting email...');
+    // const exportedPvtKey = await crypto.subtle.exportKey(
+    //   'jwk',
+    //   keyPair.privateKey
+    // );
     // now decrypt this messsage to get the email
-    decryptEncodedMessage(
+    await decryptEncodedMessage(
       keyPair.privateKey,
-      new TextEncoder().encode(encrytpedMessage)
+      encrytpedMessage
     ).then((result) => {
       console.log('Decrypted Email: ', result);
     });

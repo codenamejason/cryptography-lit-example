@@ -8,17 +8,22 @@ export const algorithm = {
 
 export const decryptEncodedMessage = async (privateKey, encryptedMessage) => {
   // todo: add try/catch
-  console.log('Decrypting email...');
-  const decryptedEncodedMessage = await crypto.subtle.decrypt(
-    algorithm,
-    privateKey, // type CryptoKey
-    encryptedMessage // type ArraryBuffer
-  );
-  console.log('first');
-  const decryptedMessage = new TextDecoder().decode(decryptedEncodedMessage);
-  console.log('decryptedMessage', decryptedMessage);
+  try {
+    console.log('[]Decrypting email...');
+    const decryptedEncodedMessage = await crypto.subtle.decrypt(
+      algorithm,
+      privateKey, // type CryptoKey
+      encryptedMessage // type ArraryBuffer
+    );
+    console.log('Email decrypted');
+    const decryptedMessage = decode(decryptedEncodedMessage);
+    console.log('decryptedMessage', decryptedMessage);
 
-  return decryptedMessage;
+    return { decryptedMessage, error: false };
+  } catch (error) {
+    console.error('Error decrytping email => ', error);
+    return { error: true };
+  }
 };
 
 export const testCryptography = async () => {
