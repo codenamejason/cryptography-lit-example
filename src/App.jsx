@@ -41,10 +41,10 @@ function App() {
 
   // Lit Encrypt
   const litProtocolEncrypt = async () => {
-    console.log('key pair to save with Lit: ', keyPair); // keyPair has value
-    const kp = JSON.stringify(keyPair);
-    await Lit.encryptString(kp).then((result) => {
-      console.log('Encryption of key pair result: ', result);
+    const exportedKeyPair = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
+    console.log('key to save with Lit: ', exportedKeyPair); // keyPair has value
+    await Lit.encryptString(JSON.stringify(exportedKeyPair)).then((result) => {
+      console.log('Encryption of key result: ', result);
       setEncryptedFile(result.encryptedFile);
       setEncryptedSymmetricKey(result.encryptedSymmetricKey);
       console.log('Encrypted Message: ', result.encryptedFile);
@@ -60,7 +60,7 @@ function App() {
     );
     // this should be the decrypted key pair
     // decryptedFile type: Blob
-    console.log('Decrypted key pair: ', JSON.parse(decryptedFile));
+    console.log('Decrypted key: ', JSON.parse(decryptedFile));
   };
 
   // decrypt the email using the private key from key pair
