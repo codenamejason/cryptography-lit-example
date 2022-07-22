@@ -68,7 +68,7 @@ class Lit {
     console.log({
       decryptedFile,
     });
-    return { decryptedFile };
+    return decryptedFile;
   }
 }
 

@@ -29,7 +29,6 @@ function App() {
     });
     console.log('Key pair generated!');
     console.log(keyPair); // keyPair has no value
-    // await litProtocolEncrypt(keyPair); // keyPair is undefined...
   };
 
   const saveKeyPair = async () => {
@@ -56,8 +55,8 @@ function App() {
       encryptedSymmetricKey
     );
     // this should be the pvt key to decrypt the key pair
-    // decryptedFile type: File
-    console.log('Decrypted key pair: ', decryptedFile);
+    // decryptedFile type: string
+    console.log('Decrypted key pair: ', JSON.parse(decryptedFile));
 
     // decryptEmail(new TextEncoder().encode(decryptedFile));
   };
