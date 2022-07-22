@@ -7,12 +7,13 @@ export const algorithm = {
 };
 
 export const decryptEncodedMessage = async (privateKey, encryptedMessage) => {
-  console.log(privateKey);
+  console.log('Decrypting email...');
   const decryptedEncodedMessage = await crypto.subtle.decrypt(
     algorithm,
-    testCryptography.keyPair.privateKey,
-    encryptedMessage
+    privateKey, // type CryptoKey
+    encryptedMessage // type ArraryBuffer
   );
+  console.log('first');
   const decryptedMessage = new TextDecoder().decode(decryptedEncodedMessage);
   console.log('decryptedMessage', decryptedMessage);
 
@@ -20,23 +21,13 @@ export const decryptEncodedMessage = async (privateKey, encryptedMessage) => {
 };
 
 export const testCryptography = async () => {
-  const keyPair = await crypto.subtle.generateKey(algorithm, true, [
-    'encrypt',
-    'decrypt',
-  ]);
-  const exportedPubKey = await crypto.subtle.exportKey(
-    'jwk',
-    keyPair.publicKey
-  );
+  const keyPair = await generateKeyPair();
+  const exportedPubKey = await getGeneratedPubKey(keyPair);
+
   console.log('exportedPubKey', exportedPubKey);
 
-  const importedPubKey = await crypto.subtle.importKey(
-    'jwk',
-    exportedPubKey,
-    algorithm,
-    true,
-    ['encrypt']
-  );
+  const importedPubKey = await getImportedPubKey(exportedPubKey);
+
   console.log('importedPubKey', importedPubKey);
 
   const message = keyPair.privateKey;
@@ -64,5 +55,33 @@ export const testCryptography = async () => {
     encryptedMessage,
     exportedPubKey,
     decryptedMessage,
+    message,
   };
+};
+
+export const generateKeyPair = async () => {
+  const keyPair = await crypto.subtle.generateKey(algorithm, true, [
+    'encrypt',
+    'decrypt',
+  ]);
+
+  return keyPair;
+};
+
+export const getGeneratedPubKey = async (keyPair) => {
+  const genPubKey = await crypto.subtle.exportKey('jwk', keyPair.publicKey);
+
+  return genPubKey;
+};
+
+export const getImportedPubKey = async (exportedPubKey) => {
+  const importedPubKey = await crypto.subtle.importKey(
+    'jwk',
+    exportedPubKey,
+    algorithm,
+    true,
+    ['encrypt']
+  );
+
+  return importedPubKey;
 };
