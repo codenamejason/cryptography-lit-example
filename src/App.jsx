@@ -10,10 +10,12 @@ import {
 import Lit from './scripts/lit';
 
 // 0. RM generates key pair
+// 00. RM saves public key in Round contract
 // 1. RM saves key-pair to Lit
 // 2. GH gets the public key and encrypts the email
 // 3. GH encrypts the PII
-// 4. RM uses Lit to get the private key and decrypt PII
+// 4. RM uses Lit to get the private key
+// 5. RM decrypts PII
 
 function App() {
   // const [message, setMessage] = useState();
