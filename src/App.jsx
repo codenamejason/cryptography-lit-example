@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
-import logo from './logo.svg';
+//import logo from './logo.svg';
+import { Button } from 'antd';
 import {
   decryptEncodedMessage,
   encrypt,
@@ -29,8 +30,10 @@ function App() {
       console.log('KP: ', kp);
       // save to state for now...
       setKeyPair(kp);
+      document.getElementById('key-pair').innerHTML = 'Key Pair Generated!';
     });
     console.log('Key pair generated!');
+
     console.log(keyPair);
   };
 
@@ -40,6 +43,7 @@ function App() {
     console.log('Saving to Lit...');
     await litProtocolEncrypt();
     console.log('Saved to Lit!');
+    document.getElementById('lit-saved').innerHTML = 'Saved to Lit 🔥';
   };
 
   // Lit Encrypt
@@ -66,6 +70,8 @@ function App() {
     );
     // this should be the decrypted key
     console.log('Decrypted key: ', JSON.parse(decryptedFile));
+    document.getElementById('decrypted-key').innerHTML =
+      'Decrypted key: ' + JSON.parse(decryptedFile).alg;
   };
 
   // Mocked for GH as a user
@@ -74,6 +80,8 @@ function App() {
     const encodedMessage = new TextEncoder().encode(message);
     const encryptedMessage = await encrypt(keyPair.publicKey, encodedMessage);
     console.log('Email has been encrypted', encryptedMessage);
+    document.getElementById('pii-encrypted').innerHTML =
+      'Email has been encrypted!';
     setEncrytpedMessage(encryptedMessage);
   };
 
@@ -85,31 +93,58 @@ function App() {
     await decryptEncodedMessage(keyPair.privateKey, encrytpedMessage).then(
       (result) => {
         console.log('Decrypted Email: ', result);
+        document.getElementById('decrypted-pii').innerHTML =
+          'Email decrypted: ' + result.decryptedMessage;
       }
     );
   };
 
+  const btnStyle = {
+    padding: '5px',
+  };
+
+  const inputStyle = {
+    padding: '5px',
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className="">
+      <div className="App-body">
         <h2>Lit 🔥 Protocol Demo with PII</h2>
-        <img src={logo} className="App-logo" alt="logo" />
-        <button onClick={() => keyPairCreation()}>Generate KeyPair</button>
+        {/* <img src={logo} className="App-logo" alt="logo" /> */}
+        <Button style={btnStyle} onClick={() => keyPairCreation()}>
+          Generate KeyPair
+        </Button>
+        <span id="key-pair"></span>
         <br />
-        <button onClick={() => saveKeyPair()}>Save to Lit 🔥</button>
+        <Button style={btnStyle} onClick={() => saveKeyPair()}>
+          Save to Lit 🔥
+        </Button>
+        <span id="lit-saved"></span>
         <br />
         <input
+          style={inputStyle}
           value={message}
           type="text"
           onChange={(e) => setMessage(e.target.value)}
         />
+        <span>{message}</span>
         <br />
-        <button onClick={() => encryptEmail()}>Encrypt PII</button>
+        <Button style={btnStyle} onClick={() => encryptEmail()}>
+          Encrypt PII
+        </Button>
+        <span id="pii-encrypted"></span>
         <br />
-        <button onClick={() => litProtocolDecrypt()}>Decrypt Key</button>
+        <Button style={btnStyle} onClick={() => litProtocolDecrypt()}>
+          Decrypt Key
+        </Button>
+        <span id="decrypted-key"></span>
         <br />
-        <button onClick={() => decryptEmail()}>Decrypt PII</button>
-      </header>
+        <Button style={btnStyle} onClick={() => decryptEmail()}>
+          Decrypt PII
+        </Button>
+        <span id="decrypted-pii"></span>
+      </div>
     </div>
   );
 }
